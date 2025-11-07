@@ -5,6 +5,7 @@ import com.tnsif.customerservice.repository.CustomerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class CustomerService {
@@ -12,7 +13,7 @@ public class CustomerService {
     private CustomerRepository customerRepository;
 
     public Customer addCustomer(Customer customer) {
-    	customer.setId(0);
+        customer.setId(0);
         return customerRepository.save(customer);
     }
 
@@ -21,7 +22,8 @@ public class CustomerService {
     }
 
     public Customer getCustomerById(int id) {
-        return customerRepository.findById(id).get();
+        Optional<Customer> opt = customerRepository.findById(id);
+        return opt.orElse(null);
     }
 
     public Customer updateCustomer(int id, Customer updatedCustomer) {
@@ -31,14 +33,16 @@ public class CustomerService {
                 existing.setEmail(updatedCustomer.getEmail());
                 existing.setPhone(updatedCustomer.getPhone());
                 existing.setPassword(updatedCustomer.getPassword());
+                // handle new field
+                existing.setAddress(updatedCustomer.getAddress());
                 return customerRepository.save(existing);
             }).orElse(null);
     }
 
-    public void softDelete(int id) {
-        customerRepository.findById(id).ifPresent(c -> {
-            c.setIsActive(false);
-            customerRepository.save(c);
-        });
+    // Now performs hard delete since isActive no longer exists
+    public void deleteCustomer(int id) {
+        if (customerRepository.existsById(id)) {
+            customerRepository.deleteById(id);
+        }
     }
 }

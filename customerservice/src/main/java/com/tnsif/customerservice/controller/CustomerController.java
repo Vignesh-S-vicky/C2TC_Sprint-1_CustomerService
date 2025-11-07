@@ -12,7 +12,7 @@ public class CustomerController {
     @Autowired
     private CustomerService customerService;
 
-    @PostMapping 
+    @PostMapping
     public Customer createCustomer(@RequestBody Customer customer) {
         return customerService.addCustomer(customer);
     }
@@ -34,7 +34,7 @@ public class CustomerController {
 
     @DeleteMapping("/{id}")
     public String deleteCustomer(@PathVariable int id) {
-        customerService.softDelete(id);
-        return "Customer soft deleted";
+        customerService.deleteCustomer(id);
+        return "Customer deleted";
     }
 }
